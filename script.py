@@ -1,8 +1,10 @@
 import asyncio
 import time
+import platform
 from bleak import BleakClient
 
-address = "5BC1B0BC-5A3F-4560-ACF0-9D1C4DD826A8"
+system = platform.system()
+address = "5BC1B0BC-5A3F-4560-ACF0-9D1C4DD826A8" if system == "Darwin" else "04:91:62:A1:47:12"
 READ_UUID = "C47C4423-F712-491B-85E6-E989A053B1B1"
 WRITE_UUID = "C47C4423-F712-491B-85E6-E989A053B1B2"
 
@@ -10,9 +12,13 @@ def read_data(sender: int, data: bytearray):
     print(f"{sender}: {data}")
 
 async def send(command, client):
-    await client.write_gatt_char(WRITE_UUID, command)
+    print(type(command))
+    await client.write_gatt_char(WRITE_UUID, list(command))
     time.sleep(0.5)
     print("Sent Data", command)
+
+async def stfu(client):
+    await send(b'TM03040064', client)
 
 async def openHand(client):
     await send(b'TM031F0064', client)
@@ -46,6 +52,8 @@ async def run(address):
                 await openHand(client)
             elif (res == "c"):
                 await closeHand(client)
+            elif (res == "stfu"):
+                await stfu(client)
             else:
                 await exitTestMode(client)
                 end = True
