@@ -8,12 +8,14 @@ address = "5BC1B0BC-5A3F-4560-ACF0-9D1C4DD826A8" if system == "Darwin" else "04:
 READ_UUID = "C47C4423-F712-491B-85E6-E989A053B1B1"
 WRITE_UUID = "C47C4423-F712-491B-85E6-E989A053B1B2"
 
+val = "1"
+
 def read_data(sender: int, data: bytearray):
     print(f"{sender}: {data}")
 
 async def send(command, client):
     print(type(command))
-    await client.write_gatt_char(WRITE_UUID, list(command))
+    await client.write_gatt_char(WRITE_UUID, command)
     time.sleep(0.5)
     print("Sent Data", command)
 
@@ -33,7 +35,7 @@ async def exitTestMode(client):
     await send(b'TT0100', client)
 
 
-async def run(address):
+async def run():
     client = BleakClient(address)
     try:
         await client.connect()
@@ -65,8 +67,10 @@ async def run(address):
         await client.disconnect()
         print("Disconnected")
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run(address))
+def start(loop):
+    loop.run_until_complete(run())
+
+print(val)
 
 
 # 5BC1B0BC-5A3F-4560-ACF0-9D1C4DD826A8
