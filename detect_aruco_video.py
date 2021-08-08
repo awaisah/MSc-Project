@@ -26,11 +26,11 @@ def rotateCorners(corners):
 	(topLeft, topRight, bottomRight, bottomLeft) = corners
 
 	# Set the top left corner to be (0,0) and move other points to be relative to this
-	offsetX = topLeft[0]
-	offsetY = topLeft[1]
+	offsetX = 0 # topLeft[0]
+	offsetY = 0 # topLeft[1]
 
-	topLeft[0] = 0
-	topLeft[1] = 0
+	# topLeft[0] = 0
+	# topLeft[1] = 0
 
 	topRight[0] = topRight[0] - offsetX
 	topRight[1] = topRight[1] - offsetY
@@ -52,6 +52,16 @@ def rotateCorners(corners):
 	sides.append(math.sqrt((bottomLeft[0] - topLeft[0]) ** 2 + (bottomLeft[1] - topLeft[1]) ** 2)) # left
 
 	return (topLeft, topRight, bottomRight, bottomLeft, sides) 
+
+def toDistance(width):
+    if (width <= 54):
+        return int(-0.5 * width + 47)
+    elif (width <= 77):
+        return int(-0.21739130434783 * width + 31.739130434783)
+    else:
+        return int(-0.19607843137255 * width + 30.588235294118)
+
+    # return int(0.044 * width * width - 0.615 * width + 48.14)
 
 lastBeep = -1
 # construct the argument parser and parse the arguments
@@ -99,7 +109,7 @@ arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT[args["type"]])
 arucoParams = cv2.aruco.DetectorParameters_create()
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+vs = VideoStream(src=1).start()
 time.sleep(2.0)
 
 # loop over the frames from the video stream
@@ -155,7 +165,7 @@ while True:
                 (topLeft[0], topLeft[1] - 15),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5, (0, 255, 0), 2)
-            cv2.putText(frame, str(averageLength),
+            cv2.putText(frame, str(averageLength) + " - " + str(toDistance(averageLength)) + "cm",
                 [10,20],
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5, (0, 0, 255), 2)
@@ -165,7 +175,7 @@ while True:
     # if the `q` key was pressed, break from the loop
     if key == ord("q"):
         break
-    if (len(corners) > 0 and averageLength >= 160):
+    if (len(corners) > 0 and averageLength >= 100):
         # sys.stdout.write('\a')
         # sys.stdout.flush()
         print(lastBeep)
