@@ -1,5 +1,6 @@
 import asyncio
 import time
+import platform
 from bleak import BleakClient
 
 system = platform.system()
@@ -43,13 +44,12 @@ async def run():
         await client.connect()
         time.sleep(0.5)
 
-        # Create a notification listener for read commands
+        # Create a notify listener for read commands
         await client.start_notify(READ_UUID, read_data)
         time.sleep(0.5)
 
         # Once connected go into Test Mode
         await enterTestMode()
-        end = False
 
         # Create a loop which will check the global variable "nextCommand"
         global nextCommand
